@@ -22,27 +22,52 @@ func init() {
 			"name": &graphql.Field {
 				Type: graphql.String,
 				Description: "The name of a profile", 
-				Resolve: getProfileName,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
+						return profile.Name, nil
+					}
+					return nil, nil
+				},
 			},
 			"age": &graphql.Field {
 				Type: graphql.Int, 
 				Description: "The age of the user",
-				Resolve: getProfileAge,
+				Resolve: Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
+						return profile.Age, nil
+					}
+					return nil, nil
+				},
 			},
 			"bio": &graphql.Field {
 				Type: graphql.String, 
 				Description: "The bio of the user",
-				Resolve: getProfileBio,
+				Resolve: Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
+						return profile.Bio, nil
+					}
+					return nil, nil
+				},
 			}, 
 			"imageURL": &graphql.Field {
 				Type: graphql.String, 
 				Description: "A URL to a profile pic",
-				Resolve: getProfileImageURL,
+				Resolve: Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
+						return profile.ImageURL, nil
+					}
+					return nil, nil
+				},
 			}, 
 			"matchPool": &graphql.Field {
 				Type: graphql.NewList(profileType), 
 				Description: "A freshly updated pool of new matches",
-				Resolve: getProfileMatchPool,
+				Resolve: Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
+						return profile.MatchPool, nil
+					}
+					return []interface{}{}, nil
+				},
 			},
 		},
 	} )
@@ -64,23 +89,11 @@ func init() {
 	// } )
 }
 
-func getProfileName( p graphql.ResolveParams ) graphql.String {
+func GetProfile(){
 
 }
 
-func getProfileAge( p graphql.ResolveParams ) graphql.Int {
-
-}
-
-func getProfileBio( p graphql.ResolveParams ) graphql.String {
-
-}
-
-func getProfileImageURL( p graphql.ResolveParams ) graphql.String {
-
-}
-
-func getProfileMatchPool( p graphql.ResolveParams ) *graphql.List {
-
+func GetProfiles(){
+	
 }
 
