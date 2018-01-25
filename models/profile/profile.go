@@ -4,7 +4,7 @@ package profile
 type BlazrProfile struct {
 	ID        string
 	Name      string
-	Age       string
+	Age       int
 	Bio       string
 	ImageURL  string
 	MatchPool []BlazrProfile
