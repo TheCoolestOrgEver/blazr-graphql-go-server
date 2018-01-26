@@ -2,7 +2,7 @@ package schema
 
 import (
 	profileTypes "../models/profile"
-	//profileResolvers "./resolvers/profile"
+	profileResolvers "./resolvers/profile"
 
 	"github.com/graphql-go/graphql"
 	//"github.com/graphql-go/graphql/language/ast"
@@ -10,27 +10,19 @@ import (
 )
 
 var (
-	Schema 		graphql.Schema
-	profileType *graphql.Object 
-	Kevin		profileTypes.BlazrProfile
+	Schema      graphql.Schema
+	profileType *graphql.Object
+	Kevin       profileTypes.BlazrProfile
 )
 
 func init() {
-
-	Kevin = profileTypes.BlazrProfile {
-		ID: "1", 
-		Name: "Kevin", 
-		Age: 22,
-		Bio: "No butt stuff", 
-	}
-
-	profileType = graphql.NewObject( graphql.ObjectConfig { 
-		Name: "Profile",
+	profileType = graphql.NewObject(graphql.ObjectConfig{
+		Name:        "Profile",
 		Description: "A blazr user profile.",
-		Fields: graphql.Fields {
-			"id": &graphql.Field {
-				Type: graphql.NewNonNull( graphql.String ),
-				Description: "The id of a profile", 
+		Fields: graphql.Fields{
+			"id": &graphql.Field{
+				Type:        graphql.NewNonNull(graphql.String),
+				Description: "The id of a profile",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
 						return profile.ID, nil
@@ -38,9 +30,9 @@ func init() {
 					return nil, nil
 				},
 			},
-			"name": &graphql.Field {
+			"name": &graphql.Field{
 				Type:        graphql.String,
-				Description: "The name of a profile", 
+				Description: "The name of a profile",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
 						return profile.Name, nil
@@ -48,8 +40,8 @@ func init() {
 					return nil, nil
 				},
 			},
-			"age": &graphql.Field {
-				Type:        graphql.Int, 
+			"age": &graphql.Field{
+				Type:        graphql.Int,
 				Description: "The age of the user",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
@@ -58,8 +50,8 @@ func init() {
 					return nil, nil
 				},
 			},
-			"bio": &graphql.Field {
-				Type:        graphql.String, 
+			"bio": &graphql.Field{
+				Type:        graphql.String,
 				Description: "The bio of the user",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
@@ -67,9 +59,9 @@ func init() {
 					}
 					return nil, nil
 				},
-			}, 
-			"imageURL": &graphql.Field {
-				Type: 	     graphql.String, 
+			},
+			"imageURL": &graphql.Field{
+				Type:        graphql.String,
 				Description: "A URL to a profile pic",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
@@ -77,9 +69,9 @@ func init() {
 					}
 					return nil, nil
 				},
-			}, 
+			},
 			// "matchPool": &graphql.Field {
-			// 	Type: 		 graphql.NewList(profileType), 
+			// 	Type: 		 graphql.NewList(profileType),
 			// 	Description: "A freshly updated pool of new matches",
 			// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			// 		if profile, ok := p.Source.(profileTypes.BlazrProfile); ok {
@@ -89,44 +81,40 @@ func init() {
 			// 	},
 			// },
 		},
-	} )
+	})
 
-	queryType := graphql.NewObject( graphql.ObjectConfig {
+	queryType := graphql.NewObject(graphql.ObjectConfig{
 		Name: "Query",
-		Fields: graphql.Fields {
-			"profile": &graphql.Field {
+		Fields: graphql.Fields{
+			"profile": &graphql.Field{
 				Type: profileType,
-				Args: graphql.FieldConfigArgument {
-					"id": &graphql.ArgumentConfig {
-						Description: "id of the profile", 
-						Type: 		 graphql.NewNonNull(graphql.String),
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Description: "id of the profile",
+						Type:        graphql.NewNonNull(graphql.String),
 					},
 				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error){
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					id := p.Args["id"].(string)
 					return GetProfile(id), nil
 				},
-			}, 
+			},
 			// "profiles": &graphql.Field {
 			// 	Type: ,
 			// 	Args: ,
 			// 	Resolve: ,
 			// }
 		},
-	} )
-	Schema, _ = graphql.NewSchema( graphql.SchemaConfig {
+	})
+	Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 		Query: queryType,
-	} )
+	})
 }
 
 func GetProfile(id string) profileTypes.BlazrProfile {
-	if Kevin.ID == id {
-		return Kevin
-	}
-	return profileTypes.BlazrProfile{}
+	return profileResolvers.GetProfile(id)
 }
 
-func GetProfiles(){
-	
-}
+func GetProfiles() {
 
+}
