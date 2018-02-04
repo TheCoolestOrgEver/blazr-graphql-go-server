@@ -1,8 +1,10 @@
 package profile
 
 import (
-		"gopkg.in/mgo.v2"
+		"strconv"
 		profileTypes "../../models/profile"
+		"../../models/location"
+		"gopkg.in/mgo.v2"
 )
 
 /*
@@ -61,10 +63,30 @@ func FindOne( id string ) profileTypes.BlazrProfile {
 	return result
 }
 
- func InsertOne( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
+func FindAll( query string ) []profileTypes.BlazrProfile {
+	return []profileTypes.BlazrProfile{ Kevin, Kevin }
+ }
+
+func FindByCoordinatesBetween( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) []profileTypes.BlazrProfile {
+	// generate query
+	query := createRadiusQueryString( minCoordinates, maxCoordinates )
+	var result []profileTypes.BlazrProfile
+	err := c.Find(query).All(&result)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+ func Save( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
 	return Kevin
  }
 
- func FindAll( query string ) []profileTypes.BlazrProfile {
-	return []profileTypes.BlazrProfile{ Kevin, Kevin }
- }
+func floatToString( number float64 ) string {
+	return strconv.FormatFloat( number, 'f', 7, 64 )
+}
+
+func createRadiusQueryString( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) string {
+	return "{ coordinates.lat: { $gte: " + floatToString( minCoordinates.Lat ) + ", $lte: " + floatToString( maxCoordinates.Lat ) + 
+		   " }, coordinates.long: { $gte: " + floatToString( minCoordinates.Long ) + ", $lte: " + floatToString( maxCoordinates.Long ) + " }"
+}

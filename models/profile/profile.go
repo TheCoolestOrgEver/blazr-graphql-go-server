@@ -1,10 +1,6 @@
 package profile
 
-// coordinates represents coordinates
-type Coordinates struct {
-	Lat float64
-	Long float64
-}
+import "../location/"
 
 // BlazrProfile represents a profile
 type BlazrProfile struct {
@@ -13,6 +9,6 @@ type BlazrProfile struct {
 	Age       int
 	Bio       string
 	ImageURL  string
-	Location  Coordinates 
+	Location  location.Coordinates
 	MatchPool []BlazrProfile
 }

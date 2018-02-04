@@ -2,6 +2,7 @@ package schema
 
 import (
 	profileTypes "../models/profile"
+	"../models/location"
 	profileResolvers "./resolvers/profile"
 
 	"strconv"
@@ -95,16 +96,20 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"profiles": &graphql.Field {
-			Type: []profileType,
+			Type: graphql.NewList(profileType),
 			Args: graphql.FieldConfigArgument{
-				"geolocation": &graphql.ArgumentConfig{
+				"coordinates": &graphql.ArgumentConfig{
 					Description: "location of the user to query nearby profiles",
 					Type:		 graphql.NewNonNull(graphql.String),
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// parse JSON here 
-				//return GetProfiles()
+				tempCoords := location.Coordinates {
+					Lat: 29.0,
+					Long: -82.0,
+				}
+				return GetProfiles(tempCoords, 30.0), nil
 			},
 		},
 	},
@@ -158,7 +163,7 @@ func GetProfile(id string) profileTypes.BlazrProfile {
 	return profileResolvers.GetProfile(id)
 }
 
-func GetProfiles(coordinates profileTypes.Coordinates, radiusMiles float64) []profileTypes.BlazrProfile {
+func GetProfiles(coordinates location.Coordinates, radiusMiles float64) []profileTypes.BlazrProfile {
 	return profileResolvers.GetProfiles(coordinates, radiusMiles)
 }
 
