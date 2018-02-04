@@ -158,8 +158,8 @@ func GetProfile(id string) profileTypes.BlazrProfile {
 	return profileResolvers.GetProfile(id)
 }
 
-func GetProfiles(coordinates profileTypes.Coordinates) []profileTypes.BlazrProfile {
-	return profileResolvers.GetProfiles(coordinates)
+func GetProfiles(coordinates profileTypes.Coordinates, radiusMiles float64) []profileTypes.BlazrProfile {
+	return profileResolvers.GetProfiles(coordinates, radiusMiles)
 }
 
 func createProfile(profile *profileTypes.BlazrProfile) profileTypes.BlazrProfile {
