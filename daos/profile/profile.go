@@ -2,9 +2,11 @@ package profile
 
 import (
 		"strconv"
+		"log"
 		profileTypes "../../models/profile"
 		"../../models/location"
 		"gopkg.in/mgo.v2"
+		"gopkg.in/mgo.v2/bson"
 )
 
 /*
@@ -46,7 +48,7 @@ func init() {
 
 	session, err := mgo.Dial(url)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	c = session.DB(database).C(collection)
 }
@@ -54,9 +56,8 @@ func init() {
 func FindOne( id string ) profileTypes.BlazrProfile {
 
 	// make query here
-	query := "query string"
 	var result profileTypes.BlazrProfile
-	err := c.Find(query).One(&result)
+	err := c.Find( bson.M{ "userID": id } ).One(&result)
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +70,7 @@ func FindAll( query string ) []profileTypes.BlazrProfile {
 
 func FindByCoordinatesBetween( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) []profileTypes.BlazrProfile {
 	// generate query
-	query := createRadiusQueryString( minCoordinates, maxCoordinates )
+	query := createRadiusQuery( minCoordinates, maxCoordinates )
 	var result []profileTypes.BlazrProfile
 	err := c.Find(query).All(&result)
 	if err != nil {
@@ -86,7 +87,10 @@ func floatToString( number float64 ) string {
 	return strconv.FormatFloat( number, 'f', 7, 64 )
 }
 
-func createRadiusQueryString( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) string {
-	return "{ coordinates.lat: { $gte: " + floatToString( minCoordinates.Lat ) + ", $lte: " + floatToString( maxCoordinates.Lat ) + 
-		   " }, coordinates.long: { $gte: " + floatToString( minCoordinates.Long ) + ", $lte: " + floatToString( maxCoordinates.Long ) + " }"
+func createRadiusQuery( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) bson.M {
+
+	lat := "{ $gte:" + floatToString( minCoordinates.Lat ) + ", $lte: " + floatToString( maxCoordinates.Lat ) + "}"
+	long := "{ $gte: " + floatToString( minCoordinates.Long ) + ", $lte: " + floatToString( maxCoordinates.Long ) + " }"
+
+	return bson.M { "coordinates.lat": lat, "coordinates.long": long }
 }
