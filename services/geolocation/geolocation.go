@@ -6,18 +6,21 @@ import (
 )
 
 const EarthRadiusMiles = 3959.0
-const LatMin = -math.Pi/2
+const LatMin = -1*math.Pi/2
 const LatMax = math.Pi/2
-const LongMin = -math.Pi
+const LongMin = -1*math.Pi
 const LongMax = math.Pi
 
 // Gets bounding coordinates for a profile
 func GetMinMaxBounds( coordinates location.Coordinates, radiusMiles float64 ) (location.Coordinates, location.Coordinates) {
+	if radiusMiles < 0 {
+		panic("Incorrect radius")
+	}
 	// perform calculations for getting profiles within a radius here
 	angularRadius := radiusMiles/EarthRadiusMiles
 	// calculate min and max latitude 
 	latMin := coordinates.Lat - angularRadius
-	latMax := coordinates.Long + angularRadius
+	latMax := coordinates.Lat + angularRadius
 	// calculate min and max longitude
 	var longMin, longMax float64
 	if latMin > LatMin && latMax < LatMax {
@@ -31,6 +34,7 @@ func GetMinMaxBounds( coordinates location.Coordinates, radiusMiles float64 ) (l
 			longMax -= 2*math.Pi
 		}
 	} else {
+		// pole stuff
 		latMin = math.Max(latMin, LatMin)
 		latMax = math.Min(latMax, LatMax)
 		longMin = LongMin

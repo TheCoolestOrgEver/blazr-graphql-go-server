@@ -32,8 +32,8 @@ var (
 
 func init() {
 
-	url = "google.com"
-	database = "database"
+	url = "localhost:27017"
+	database = "blazr"
 	collection = "profiles"
 
 	Kevin = profileTypes.BlazrProfile {
