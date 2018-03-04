@@ -17,3 +17,11 @@ func CreateProfile( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfi
 func GetProfiles( coordinates location.Coordinates, radiusMiles float64 ) []profileTypes.BlazrProfile {
 	return profileService.GetProfiles( coordinates, radiusMiles )
 }
+
+func DeleteProfile( id string ) profileTypes.BlazrProfile {
+	return profileService.DeleteProfile( id )
+}
+
+func UpdateProfile( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
+	return profileService.UpdateProfile( profile )
+}

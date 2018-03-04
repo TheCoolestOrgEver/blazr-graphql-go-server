@@ -92,7 +92,7 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				id := p.Args["userID"].(string)
-				return GetProfile(id), nil
+				return getProfile(id), nil
 			},
 		},
 		"profiles": &graphql.Field {
@@ -109,7 +109,7 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 					Lat: 29.0,
 					Long: -82.0,
 				}
-				return GetProfiles(tempCoords, 30.0), nil
+				return getProfiles(tempCoords, 30.0), nil
 			},
 		},
 	},
@@ -151,22 +151,83 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				return createProfile(&newProfile), nil
 			},
 		},
+		"deleteProfile": &graphql.Field {
+			Type: profileType,
+			Description: "Delete a profile", 
+			Args: graphql.FieldConfigArgument {
+				"userID": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, _ := p.Args["userID"].(string)
+
+				return deleteProfile(id), nil
+			},
+		},
+		"updateProfile": &graphql.Field {
+			Type: profileType,
+			Description: "Update a profile", 
+			Args: graphql.FieldConfigArgument {
+				"userID": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+				},
+				"name": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+				},
+				"age": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+				},
+				"bio": &graphql.ArgumentConfig {
+					Type: graphql.String,
+				},
+				"ImageURL": &graphql.ArgumentConfig {
+					Type: graphql.String,
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				userID, _ := p.Args["userID"].(string)
+				name, _ := p.Args["name"].(string)
+				age, _ := strconv.Atoi(p.Args["age"].(string))
+				bio, _ := p.Args["bio"].(string)
+				imageURL, _ := p.Args["imageURL"].(string)
+
+				toUpdate := profileTypes.BlazrProfile {
+					UserID: userID,
+					Name: name,
+					Age: age,
+					Bio: bio,
+					ImageURL: imageURL,
+				}
+
+				return updateProfile(&toUpdate), nil
+			},
+		},
 	},
 })
 
 var Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	Query: rootQuery,
+	Mutation: rootMutation,
 })
 
 
-func GetProfile(id string) profileTypes.BlazrProfile {
+func getProfile(id string) profileTypes.BlazrProfile {
 	return profileResolvers.GetProfile(id)
 }
 
-func GetProfiles(coordinates location.Coordinates, radiusMiles float64) []profileTypes.BlazrProfile {
+func getProfiles(coordinates location.Coordinates, radiusMiles float64) []profileTypes.BlazrProfile {
 	return profileResolvers.GetProfiles(coordinates, radiusMiles)
 }
 
 func createProfile(profile *profileTypes.BlazrProfile) profileTypes.BlazrProfile {
 	return profileResolvers.CreateProfile(profile)
+}
+
+func deleteProfile(id string) profileTypes.BlazrProfile {
+	return profileResolvers.DeleteProfile(id)
+}
+
+func updateProfile(profile *profileTypes.BlazrProfile) profileTypes.BlazrProfile {
+	return profileResolvers.UpdateProfile(profile)
 }

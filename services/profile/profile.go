@@ -25,3 +25,11 @@ func GetProfiles( coordinates location.Coordinates, radiusMiles float64 ) []prof
 
 	return profileDAO.FindByCoordinatesBetween( minCoordinates, maxCoordinates )
 }
+
+func DeleteProfile( id string ) profileTypes.BlazrProfile {
+	return profileDAO.Remove(id)
+}
+
+func UpdateProfile( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
+	return profileDAO.Update( profile )
+}

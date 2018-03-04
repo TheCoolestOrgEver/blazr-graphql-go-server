@@ -1,36 +1,24 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"context"
-	"log"
-
-	"./api"
-
-	"github.com/graphql-go/graphql"
+    "fmt"
+    "github.com/julienschmidt/httprouter"
+    "net/http"
+    "log"
+    profileHandlers "./api/profile"
 )
 
-func graphqlHandler( w http.ResponseWriter, r *http.Request ) {
-	user := struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}{1, "cool user"}
-	result := graphql.Do(graphql.Params{
-		Schema:        schema.Schema,
-		RequestString: r.URL.Query().Get("query"),
-		Context:       context.WithValue(context.Background(), "currentUser", user),
-	})
-	if len(result.Errors) > 0 {
-		log.Printf("wrong result, unexpected errors: %v", result.Errors)
-		return
-	}
-	json.NewEncoder(w).Encode(result)
+func Index( w http.ResponseWriter, r *http.Request, _ httprouter.Params ) {
+    fmt.Fprint(w, "Welcome!\n")
 }
 
 func main() {
-	http.HandleFunc( "/graphql", graphqlHandler)
-	fmt.Println("Starting server")
-	http.ListenAndServe(":8080", nil)
+    router := httprouter.New()
+    router.GET( "/", Index )
+    router.GET( "/profile/:userID", profileHandlers.GetProfile )
+    router.GET( "/profiles/", profileHandlers.GetProfiles )
+    router.POST( "/profile/", profileHandlers.CreateProfile )
+    router.PUT( "/profile/", profileHandlers.UpdateProfile )
+
+    log.Fatal(http.ListenAndServe(":8080", router))
 }
