@@ -80,8 +80,33 @@ func FindByCoordinatesBetween( minCoordinates location.Coordinates, maxCoordinat
 }
 
  func Save( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
-	return Kevin
+	
+	err := c.Insert( profile )
+
+	if err != nil {
+		panic(err)
+	}
+
+	return *profile
  }
+
+func Remove( id string ) profileTypes.BlazrProfile {
+	toRemove := FindOne( id )
+	err := c.Remove(bson.M{"userID": id})
+	if err != nil {
+		panic(err)
+	}
+	return toRemove
+ }
+
+func Update( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
+	change := bson.M { "$set": bson.M {"name": profile.Name, "age": profile.Age, "bio": profile.Bio, "imageURL": profile.ImageURL } }
+	err := c.Update(bson.M { "userID": profile.UserID }, change)
+	if err != nil {
+		panic(err)
+	}
+	return *profile
+}
 
 func floatToString( number float64 ) string {
 	return strconv.FormatFloat( number, 'f', 7, 64 )
@@ -89,8 +114,8 @@ func floatToString( number float64 ) string {
 
 func createRadiusQuery( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) bson.M {
 
-	lat := "{ $gte:" + floatToString( minCoordinates.Lat ) + ", $lte: " + floatToString( maxCoordinates.Lat ) + "}"
-	long := "{ $gte: " + floatToString( minCoordinates.Long ) + ", $lte: " + floatToString( maxCoordinates.Long ) + " }"
+	lat := bson.M { "$gte": floatToString( minCoordinates.Lat ), "$lte": floatToString( maxCoordinates.Lat ) }
+	long := bson.M { "$gte": floatToString( minCoordinates.Long ), "$lte": floatToString( maxCoordinates.Long ) }
 
 	return bson.M { "coordinates.lat": lat, "coordinates.long": long }
 }
