@@ -101,7 +101,7 @@ func Remove( id string ) profileTypes.BlazrProfile {
 
 func Update( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
 	change := bson.M { "$set": bson.M {"name": profile.Name, "age": profile.Age, "bio": profile.Bio, "imageURL": profile.ImageURL } }
-	err := c.Update(profile.UserID, change)
+	err := c.Update(bson.M { "userID": profile.UserID }, change)
 	if err != nil {
 		panic(err)
 	}

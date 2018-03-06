@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"fmt"
 	"encoding/json"
-	"../../services/profile"
+	profileService "../../services/profile"
 	"../../models/location"
 	profileTypes "../../models/profile"
 )
@@ -14,10 +14,10 @@ import (
 func GetProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) {
 	id := ps.ByName("userID")
 	fmt.Print(id)
-	profile := profile.GetProfile( id )
+	profile := profileService.GetProfile( id )
 	p, _ := json.Marshal(profile)
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
+	w.WriteHeader(200)	
     fmt.Fprintf(w, "%s", p)
 }
 
@@ -33,51 +33,35 @@ func GetProfiles( w http.ResponseWriter, r *http.Request, ps httprouter.Params )
 	}
 	rad, _ := strconv.ParseFloat(radius, 64)
 
-	profile.GetProfiles( c, rad )
+	profileService.GetProfiles( c, rad )
 }
 
 func CreateProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) {
-	// name := ps.ByName("name")
-	// age, _ := strconv.Atoi(ps.ByName("age"))
-	// bio := ps.ByName("bio")
-	// imageURL := ps.ByName("imageURL")
-
-	// newProfile := profileTypes.BlazrProfile {
-	// 	Name: name,
-	// 	Age: age,
-	// 	Bio: bio,
-	// 	ImageURL: imageURL,
-	// }
 	profile := profileTypes.BlazrProfile {}
 	json.NewDecoder(r.Body).Decode(&profile)
-	profile.CreateProfile( &profile )
-	p := json.Marshal(profile)
+	created := profileService.CreateProfile( &profile )
+	p, _ := json.Marshal(created)
 	w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(201)
+    w.WriteHeader(200)
     fmt.Fprintf(w, "%s", p)
 }
 
 func UpdateProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) {
-	// userID := ps.ByName("userID")
-	// name := ps.ByName("name")
-	// age, _ := strconv.Atoi(ps.ByName("age"))
-	// bio := ps.ByName("bio")
-	// imageURL := ps.ByName("imageURL")
-
-	// toUpdate := profileTypes.BlazrProfile {
-	// 	UserID: userID,
-	// 	Name: name,
-	// 	Age: age,
-	// 	Bio: bio,
-	// 	ImageURL: imageURL,
-	// }
-	p := profileTypes.BlazrProfile {}
-	json.NewDecoder(r.Body).Decode(&p)
-	profile.UpdateProfile( &toUpdate )
+	profile := profileTypes.BlazrProfile {}
+	json.NewDecoder(r.Body).Decode(&profile)
+	updated := profileService.UpdateProfile( &profile )
+	p, _ := json.Marshal(updated)
+	w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(200)
+    fmt.Fprintf(w, "%s", p)
 }
 
 func DeleteProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) {
 	userID := ps.ByName("userID")
 
-	profile.DeleteProfile( userID )
+	deleted := profileService.DeleteProfile( userID )
+	p, _ := json.Marshal(deleted)
+	w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(200)
+    fmt.Fprintf(w, "%s", p)
 }

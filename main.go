@@ -16,9 +16,10 @@ func main() {
     router := httprouter.New()
     router.GET( "/", Index )
     router.GET( "/profile/:userID", profileHandlers.GetProfile )
+    router.DELETE( "/profile/:userID", profileHandlers.DeleteProfile )
     router.GET( "/profiles/", profileHandlers.GetProfiles )
     router.POST( "/profile/", profileHandlers.CreateProfile )
     router.PUT( "/profile/", profileHandlers.UpdateProfile )
-
+    fmt.Print("Starting server")
     log.Fatal(http.ListenAndServe(":8080", router))
 }
