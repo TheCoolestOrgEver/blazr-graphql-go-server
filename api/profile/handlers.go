@@ -22,17 +22,18 @@ func GetProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) 
 }
 
 func GetProfiles( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) {
-	coordinates := ps.ByName("coordinates")
-	radius := ps.ByName("radius")
-
-	b := []byte(coordinates)
-	var c location.Coordinates
-	err := json.Unmarshal(b, &c)
-	if(err!=nil) {
-		panic(err)
+	q := r.URL.Query()
+	radius, _ := strconv.ParseFloat(q.Get("radius"), 64)
+	lat, _ := strconv.ParseFloat(q.Get("lat"), 64)
+	long, _ := strconv.ParseFloat(q.Get("long"), 64)
+	
+	coordinates := location.Coordinates {
+		lat,
+		long,
 	}
-	rad, _ := strconv.ParseFloat(radius, 64)
-
+	fmt.Print(coordinates.Lat)
+	fmt.Print(coordinates.Long)
+	fmt.Print(radius)
 	profileService.GetProfiles( c, rad )
 }
 
