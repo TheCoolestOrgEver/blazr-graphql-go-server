@@ -66,7 +66,7 @@ func FindOne( id string ) profileTypes.BlazrProfile {
 
 func FindAll( query string ) []profileTypes.BlazrProfile {
 	return []profileTypes.BlazrProfile{ Kevin, Kevin }
- }
+}
 
 func FindByCoordinatesBetween( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) []profileTypes.BlazrProfile {
 	// generate query

@@ -6,6 +6,7 @@ import (
     "net/http"
     "log"
     profileHandlers "./api/profile"
+    "./api/rabbit"
 )
 
 func Index( w http.ResponseWriter, r *http.Request, _ httprouter.Params ) {
@@ -22,4 +23,5 @@ func main() {
     router.PUT( "/profile/", profileHandlers.UpdateProfile )
     fmt.Print("Starting server")
     log.Fatal(http.ListenAndServe(":8080", router))
+    rabbit.Consume()
 }
