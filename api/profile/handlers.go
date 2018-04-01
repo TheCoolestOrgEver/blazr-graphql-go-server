@@ -34,7 +34,7 @@ func GetProfiles( w http.ResponseWriter, r *http.Request, ps httprouter.Params )
 	fmt.Print(coordinates.Lat)
 	fmt.Print(coordinates.Long)
 	fmt.Print(radius)
-	profileService.GetProfiles( c, rad )
+	profileService.GetProfiles( coordinates, radius )
 }
 
 func CreateProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) {
