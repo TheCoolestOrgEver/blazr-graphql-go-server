@@ -6,6 +6,7 @@ import (
 	profileDAO "../../daos/profile"
 	"../geolocation"
 	"github.com/rs/xid"
+	"fmt"
 )
 
 func GetProfile( id string ) profileTypes.BlazrProfile {
@@ -22,6 +23,8 @@ func GetProfiles( coordinates location.Coordinates, radiusMiles float64 ) []prof
 	
 	// use geolocation package to create bounds around our profile
 	minCoordinates, maxCoordinates := geolocation.GetMinMaxBounds(coordinates, radiusMiles)
+	fmt.Print("min coords : %d, %d ", minCoordinates.Lat, minCoordinates.Long)
+	fmt.Print("max coords : %d, %d ", maxCoordinates.Lat, maxCoordinates.Long)
 
 	return profileDAO.FindByCoordinatesBetween( minCoordinates, maxCoordinates )
 }

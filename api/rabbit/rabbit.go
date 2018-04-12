@@ -22,7 +22,7 @@ func failOnError(err error, msg string) {
 
 func init() {
 
-	sendConn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	sendConn, err := amqp.Dial("amqp://cduica:password@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	//defer sendConn.Close()
 
@@ -31,7 +31,7 @@ func init() {
 	//defer sendCh.Close()
 
 	sendQ, err = sendCh.QueueDeclare(
-		"hello", // name
+		"cduica-hello", // name
 		false,   // durable
 		false,   // delete when unused
 		false,   // exclusive
@@ -40,7 +40,7 @@ func init() {
 	)
 	failOnError(err, "Failed to declare a queue")
 
-	receiveConn, err := amqp.Dial("amqp://guest:guest@localhost:5673/")
+	receiveConn, err := amqp.Dial("amqp://cduica:password@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	//defer receiveConn.Close()
 
@@ -49,7 +49,7 @@ func init() {
 	//defer receiveCh.Close()
 
 	receiveQ, err = receiveCh.QueueDeclare(
-	"hello", // name
+	"cduica-world", // name
 	false,   // durable
 	false,   // delete when usused
 	false,   // exclusive
@@ -70,7 +70,7 @@ func PublishMatch( userA string, userB string ) {
 			ContentType: "text/plain",
 			Body:        []byte(body),
 		})
-	log.Printf(" [x] Sent %s", body)
+	log.Printf("[x] Sent message %s", body)
 	failOnError(err, "Failed to publish a message")
 }
 
@@ -90,17 +90,17 @@ func Consume() {
 	  
 	  go func() {
 		for d := range msgs {
-		  log.Printf( "Received a message: %s", d.Body )
+		  log.Printf( "[x] Received a message: %s", d.Body )
 		  s := string( d.Body[:] )
 		  split := strings.Split( s, " " )
 		  match := matching.SaveMatch( split[0], split[1] )
-		  if match.Matched {
+		  if match.Matched == true {
 			  PublishMatch(split[0], split[1])
 			  PublishMatch(split[1], split[0])
 		  }
 		}
 	  }()
 	  
-	  log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	  log.Println("RabbitMQ started \n")
 	  <-forever
 }

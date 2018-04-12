@@ -73,6 +73,7 @@ func FindByCoordinatesBetween( minCoordinates location.Coordinates, maxCoordinat
 	query := createRadiusQuery( minCoordinates, maxCoordinates )
 	var result []profileTypes.BlazrProfile
 	err := c.Find(query).All(&result)
+	//fmt.Println(query)
 	if err != nil {
 		panic(err)
 	}
@@ -113,9 +114,19 @@ func floatToString( number float64 ) string {
 }
 
 func createRadiusQuery( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) bson.M {
+	query := bson.M { "$and": []interface{} {
+		bson.M {
+			"location.lat": bson.M {
+				"$gte": minCoordinates.Lat, "$lte": maxCoordinates.Lat,
+			}, 
+		},
+		bson.M {
+			"location.long": bson.M {
+				"$gte": minCoordinates.Long, "$lte": maxCoordinates.Long,
+			},
+		},
+	},
+	}
 
-	lat := bson.M { "$gte": floatToString( minCoordinates.Lat ), "$lte": floatToString( maxCoordinates.Lat ) }
-	long := bson.M { "$gte": floatToString( minCoordinates.Long ), "$lte": floatToString( maxCoordinates.Long ) }
-
-	return bson.M { "coordinates.lat": lat, "coordinates.long": long }
+	return query
 }

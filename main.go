@@ -21,7 +21,7 @@ func main() {
     router.GET( "/profiles/", profileHandlers.GetProfiles )
     router.POST( "/profile/", profileHandlers.CreateProfile )
     router.PUT( "/profile/", profileHandlers.UpdateProfile )
-    fmt.Print("Starting server")
-    log.Fatal(http.ListenAndServe(":8080", router))
-    rabbit.Consume()
+    go rabbit.Consume()
+    fmt.Println( "\nStarting http server on port 8080 \n" )
+    go log.Fatal(http.ListenAndServe(":8080", router))
 }
