@@ -4,6 +4,7 @@ import (
 	"log"
 	matchType "../../models/match"
 	matchDAO "../../daos/match"
+	matchpoolService "../matchpool"
 	"github.com/rs/xid"
 )
 
@@ -14,7 +15,7 @@ func SaveMatch( matcher string, matchee string ) matchType.Match {
 	if err != nil {
 		// make new match
 		matchID := xid.New()
-		match = matchType.Match{
+		match = matchType.Match {
 			MatchID: matchID.String(),
 			UserA: matcher,
 			UserB: matchee,
@@ -34,6 +35,8 @@ func SaveMatch( matcher string, matchee string ) matchType.Match {
 		if err!=nil {
 			log.Fatal( err )
 		}
+		matchpoolService.AddMatchToMatchPool(matcher, &match)
+		matchpoolService.AddMatchToMatchPool(matchee, &match)
 	}
 
 	//return the updated match
