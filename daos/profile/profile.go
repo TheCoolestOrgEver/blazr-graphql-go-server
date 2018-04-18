@@ -2,7 +2,7 @@ package profile
 
 import (
 		"strconv"
-		"log"
+		//"log"
 		profileTypes "../../models/profile"
 		"../../models/location"
 		"gopkg.in/mgo.v2"
@@ -48,7 +48,7 @@ func init() {
 
 	session, err := mgo.Dial(url)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	c = session.DB(database).C(collection)
 }
@@ -101,7 +101,7 @@ func Remove( id string ) profileTypes.BlazrProfile {
  }
 
 func Update( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
-	change := bson.M { "$set": bson.M {"name": profile.Name, "age": profile.Age, "bio": profile.Bio, "imageURL": profile.ImageURL } }
+	change := bson.M { "$set": bson.M {"name": profile.Name, "age": profile.Age, "bio": profile.Bio, "imageURL": profile.ImageURL, "location": profile.Location } }
 	err := c.Update(bson.M { "userID": profile.UserID }, change)
 	if err != nil {
 		panic(err)

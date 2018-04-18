@@ -2,7 +2,7 @@ package match
 
 import (
 	"strconv"
-	"log"
+	//"log"
 	matchType "../../models/match"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -23,7 +23,7 @@ func init() {
 
 	session, err := mgo.Dial(url)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	c = session.DB(database).C(collection)
 
