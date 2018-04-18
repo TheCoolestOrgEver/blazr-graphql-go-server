@@ -5,7 +5,7 @@ import (
     "net/http"
 	"strconv"
 	"fmt"
-	"log"
+	//"log"
 	"encoding/json"
 	profileService "../../services/profile"
 	matchpoolService "../../services/matchpool"
@@ -89,8 +89,9 @@ func GetMatches( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) 
 	fmt.Println("Getting matches")
 	err, matches := matchpoolService.GetMatches( id )
 	if err!=nil {
-		log.Fatal(err)
+		panic(err)
 	}
+	//fmt.Print(err)
 	p, _ := json.Marshal( matches )
 	fmt.Println(string(p))
 	fmt.Print("\n")

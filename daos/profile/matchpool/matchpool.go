@@ -1,7 +1,7 @@
 package matchpool
 
 import (
-		"log"
+		//"log"
 		"../../../models/profile/matchpool"
 		"gopkg.in/mgo.v2"
 		"gopkg.in/mgo.v2/bson"
@@ -22,7 +22,7 @@ func init() {
 
 	session, err := mgo.Dial(url)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	c = session.DB(database).C(collection)
 }
@@ -46,7 +46,7 @@ func Save( match *matchpool.MatchPool ) (error, matchpool.MatchPool) {
 func Remove( id string ) (error, matchpool.MatchPool) {
 	err, toRemove := FindOne( id )
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	err = c.Remove(bson.M{"userID": id})
 
