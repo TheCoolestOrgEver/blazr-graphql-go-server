@@ -7,6 +7,7 @@ import (
 		"../../models/location"
 		"gopkg.in/mgo.v2"
 		"gopkg.in/mgo.v2/bson"
+		"errors"
 )
 
 /*
@@ -38,14 +39,6 @@ func init() {
 	database = "blazr"
 	collection = "profiles"
 
-	Kevin = profileTypes.BlazrProfile {
-		UserID: "1", 
-		Name: "Kevin", 
-		Age: 22,
-		Bio: "No butt stuff", 
-		MatchPool: []profileTypes.BlazrProfile{},
-	}
-
 	session, err := mgo.Dial(url)
 	if err != nil {
 		panic(err)
@@ -53,60 +46,46 @@ func init() {
 	c = session.DB(database).C(collection)
 }
 
-func FindOne( id string ) profileTypes.BlazrProfile {
+func FindOne( id string ) (error, profileTypes.BlazrProfile) {
 
 	// make query here
 	var result profileTypes.BlazrProfile
 	err := c.Find( bson.M{ "userID": id } ).One(&result)
-	if err != nil {
-		panic(err)
-	}
-	return result
+
+	return err, result
 }
 
-func FindAll( query string ) []profileTypes.BlazrProfile {
-	return []profileTypes.BlazrProfile{ Kevin, Kevin }
-}
-
-func FindByCoordinatesBetween( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) []profileTypes.BlazrProfile {
+func FindByCoordinatesBetween( minCoordinates location.Coordinates, maxCoordinates location.Coordinates ) (error, []profileTypes.BlazrProfile) {
 	// generate query
 	query := createRadiusQuery( minCoordinates, maxCoordinates )
 	var result []profileTypes.BlazrProfile
 	err := c.Find(query).All(&result)
 	//fmt.Println(query)
-	if err != nil {
-		panic(err)
+	if len(result) == 0 {
+		err = errors.New("Not found")
 	}
-	return result
+	return err, result
 }
 
- func Save( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
+ func Save( profile *profileTypes.BlazrProfile ) (error, profileTypes.BlazrProfile) {
 	
 	err := c.Insert( profile )
 
-	if err != nil {
-		panic(err)
-	}
-
-	return *profile
+	return err, *profile
  }
 
-func Remove( id string ) profileTypes.BlazrProfile {
-	toRemove := FindOne( id )
-	err := c.Remove(bson.M{"userID": id})
-	if err != nil {
-		panic(err)
-	}
-	return toRemove
+func Remove( id string ) (error, profileTypes.BlazrProfile) {
+	err, toRemove := FindOne( id )
+	err = c.Remove(bson.M{"userID": id})
+
+	return err, toRemove
  }
 
-func Update( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
+func Update( profile *profileTypes.BlazrProfile ) (error, profileTypes.BlazrProfile) {
 	change := bson.M { "$set": bson.M {"name": profile.Name, "age": profile.Age, "bio": profile.Bio, "imageURL": profile.ImageURL, "location": profile.Location } }
 	err := c.Update(bson.M { "userID": profile.UserID }, change)
-	if err != nil {
-		panic(err)
-	}
-	return *profile
+
+	return err, *profile
 }
 
 func floatToString( number float64 ) string {

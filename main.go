@@ -22,6 +22,7 @@ func main() {
     router.POST( "/profile/", profileHandlers.CreateProfile )
     router.PUT( "/profile/", profileHandlers.UpdateProfile )
     router.GET("/matches/:userID", profileHandlers.GetMatches )
+    router.PUT( "/location/", profileHandlers.UpdateLocation )
     go rabbit.Consume()
     fmt.Println( "\nStarting http server on port 8080 \n" )
     go log.Fatal(http.ListenAndServe(":8080", router))

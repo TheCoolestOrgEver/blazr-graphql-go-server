@@ -1,14 +1,14 @@
 package matching 
 
 import (
-	"log"
+	//"log"
 	matchType "../../models/match"
 	matchDAO "../../daos/match"
 	matchpoolService "../matchpool"
 	"github.com/rs/xid"
 )
 
-func SaveMatch( matcher string, matchee string ) matchType.Match {
+func SaveMatch( matcher string, matchee string ) (error, matchType.Match) {
 	
 	err, match := matchDAO.FindByUserID( matcher, matchee )
 
@@ -21,26 +21,21 @@ func SaveMatch( matcher string, matchee string ) matchType.Match {
 			UserB: matchee,
 			Matched: false,
 		}
-		err, saved := matchDAO.Save( &match )
-		if err!=nil {
-			log.Fatal( err )
-		}
-		return saved
+
+		return matchDAO.Save( &match )
 	}
 
 	if !match.Matched && ( match.UserA == matchee ) && ( match.UserB == matcher ) {
 		// update match to have matched true
 		match.Matched = true
 		err, match = matchDAO.Update( &match )
-		if err!=nil {
-			log.Fatal( err )
-		}
+
 		matchpoolService.AddMatchToMatchPool(matcher, &match)
 		matchpoolService.AddMatchToMatchPool(matchee, &match)
 	}
 
 	//return the updated match
-	return match
+	return err, match
 }
 
 func CheckForMatch(matcher string, matchee string) bool {
