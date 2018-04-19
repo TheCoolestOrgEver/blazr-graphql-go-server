@@ -36,3 +36,13 @@ func DeleteProfile( id string ) profileTypes.BlazrProfile {
 func UpdateProfile( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
 	return profileDAO.Update( profile )
 }
+
+func UpdateLocation( userID string, lat float64, long float64 ) profileTypes.BlazrProfile {
+	toUpdate := profileDAO.FindOne( userID )
+	coordinates := location.Coordinates {
+		lat,
+		long,
+	}
+	toUpdate.Location = coordinates
+	return profileDAO.Update( &toUpdate )
+}

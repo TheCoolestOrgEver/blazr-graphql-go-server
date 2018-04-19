@@ -99,3 +99,18 @@ func GetMatches( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) 
 	w.WriteHeader(200)	
     fmt.Fprintf(w, "%s", p)
 }
+
+func UpdateLocation( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) {
+	q := r.URL.Query()
+	userID := q.Get("userID")
+	lat, _ := strconv.ParseFloat(q.Get("lat"), 64)
+	long, _ := strconv.ParseFloat(q.Get("long"), 64)
+	fmt.Println("Updating location")
+	updated := profileService.UpdateLocation( userID, lat, long )
+	p, _ := json.Marshal(updated)
+	fmt.Println(string(p))
+	fmt.Print("\n")
+	w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(200)
+    fmt.Fprintf(w, "%s", p)
+}
