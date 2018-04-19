@@ -7,19 +7,15 @@ import (
 )
 
 func GetMatches( id string ) (error, matchpoolType.MatchPool) {
-	err, matches := matchpoolDAO.FindOne(id)
-
-	return err, matches
+	return matchpoolDAO.FindOne(id)
 }
 
 func CreateMatchPool( matchpool *matchpoolType.MatchPool ) (error, matchpoolType.MatchPool) {
-	err, matches := matchpoolDAO.Save(matchpool)
-	return err, matches
+	return matchpoolDAO.Save(matchpool)
 }
 
 func DeleteProfile( id string ) (error, matchpoolType.MatchPool) {
-	err, matches := matchpoolDAO.Remove(id) 
-	return err, matches
+	return matchpoolDAO.Remove(id) 
 }
 
 func AddMatchToMatchPool( userID string, match *matchType.Match ) (error, matchpoolType.MatchPool) {
@@ -33,7 +29,6 @@ func AddMatchToMatchPool( userID string, match *matchType.Match ) (error, matchp
 		CreateMatchPool( &m )
 	}
 	matches.Matches = append(matches.Matches, *match)
-	err, matches = matchpoolDAO.Update(&matches)
-	return err, matches
+	return matchpoolDAO.Update(&matches)
 }
 

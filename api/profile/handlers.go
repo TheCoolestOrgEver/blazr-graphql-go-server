@@ -17,7 +17,11 @@ func GetProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) 
 	id := ps.ByName("userID")
 	fmt.Print(id)
 	fmt.Println("Getting profile")
-	profile := profileService.GetProfile( id )
+	err, profile := profileService.GetProfile( id )
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	p, _ := json.Marshal(profile)
 	fmt.Println(string(p))
 	fmt.Print("\n")
@@ -36,7 +40,11 @@ func GetProfiles( w http.ResponseWriter, r *http.Request, ps httprouter.Params )
 		long,
 	}
 	fmt.Println("Fetching nearby profiles")
-	profiles := profileService.GetProfiles( coordinates, radius )
+	err, profiles := profileService.GetProfiles( coordinates, radius )
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	p, _ := json.Marshal(profiles)
 	fmt.Println(string(p))
 	fmt.Print("\n")
@@ -49,7 +57,11 @@ func CreateProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	profile := profileTypes.BlazrProfile {}
 	json.NewDecoder(r.Body).Decode(&profile)
 	fmt.Println("Creating profile")
-	created := profileService.CreateProfile( &profile )
+	err, created := profileService.CreateProfile( &profile )
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	p, _ := json.Marshal(created)
 	fmt.Println(string(p))
 	fmt.Print("\n")
@@ -62,7 +74,11 @@ func UpdateProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	profile := profileTypes.BlazrProfile {}
 	json.NewDecoder(r.Body).Decode(&profile)
 	fmt.Println("Updating profile")
-	updated := profileService.UpdateProfile( &profile )
+	err, updated := profileService.UpdateProfile( &profile )
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	p, _ := json.Marshal(updated)
 	fmt.Println(string(p))
 	fmt.Print("\n")
@@ -74,7 +90,11 @@ func UpdateProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params
 func DeleteProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) {
 	userID := ps.ByName("userID")
 	fmt.Println("Deleting profile")
-	deleted := profileService.DeleteProfile( userID )
+	err, deleted := profileService.DeleteProfile( userID )
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	p, _ := json.Marshal(deleted)
 	fmt.Println(string(p))
 	fmt.Print("\n")
@@ -89,7 +109,8 @@ func GetMatches( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) 
 	fmt.Println("Getting matches")
 	err, matches := matchpoolService.GetMatches( id )
 	if err!=nil {
-		panic(err)
+		http.Error(w, err.Error(), 500)
+		return
 	}
 	//fmt.Print(err)
 	p, _ := json.Marshal( matches )
@@ -106,7 +127,11 @@ func UpdateLocation( w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	lat, _ := strconv.ParseFloat(q.Get("lat"), 64)
 	long, _ := strconv.ParseFloat(q.Get("long"), 64)
 	fmt.Println("Updating location")
-	updated := profileService.UpdateLocation( userID, lat, long )
+	err, updated := profileService.UpdateLocation( userID, lat, long )
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	p, _ := json.Marshal(updated)
 	fmt.Println(string(p))
 	fmt.Print("\n")

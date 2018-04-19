@@ -9,17 +9,17 @@ import (
 	"fmt"
 )
 
-func GetProfile( id string ) profileTypes.BlazrProfile {
+func GetProfile( id string ) (error, profileTypes.BlazrProfile) {
 	return profileDAO.FindOne(id)
 }
 
-func CreateProfile( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
+func CreateProfile( profile *profileTypes.BlazrProfile ) (error, profileTypes.BlazrProfile) {
 	//userID := xid.New()
 	//profile.UserID = userID.String();
 	return profileDAO.Save(profile)
 }
 
-func GetProfiles( coordinates location.Coordinates, radiusMiles float64 ) []profileTypes.BlazrProfile {
+func GetProfiles( coordinates location.Coordinates, radiusMiles float64 ) (error, []profileTypes.BlazrProfile) {
 	
 	// use geolocation package to create bounds around our profile
 	minCoordinates, maxCoordinates := geolocation.GetMinMaxBounds(coordinates, radiusMiles)
@@ -29,16 +29,19 @@ func GetProfiles( coordinates location.Coordinates, radiusMiles float64 ) []prof
 	return profileDAO.FindByCoordinatesBetween( minCoordinates, maxCoordinates )
 }
 
-func DeleteProfile( id string ) profileTypes.BlazrProfile {
+func DeleteProfile( id string ) (error, profileTypes.BlazrProfile) {
 	return profileDAO.Remove(id)
 }
 
-func UpdateProfile( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
+func UpdateProfile( profile *profileTypes.BlazrProfile ) (error, profileTypes.BlazrProfile) {
 	return profileDAO.Update( profile )
 }
 
-func UpdateLocation( userID string, lat float64, long float64 ) profileTypes.BlazrProfile {
-	toUpdate := profileDAO.FindOne( userID )
+func UpdateLocation( userID string, lat float64, long float64 ) (error, profileTypes.BlazrProfile) {
+	err, toUpdate := profileDAO.FindOne( userID )
+	if err != nil {
+		fmt.Println(err)
+	}
 	coordinates := location.Coordinates {
 		lat,
 		long,

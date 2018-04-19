@@ -2,6 +2,7 @@ package rabbit
 
 import (
 	"log"
+	"fmt"
 	"strings"
 	"github.com/streadway/amqp"
 	"../../services/matching"
@@ -118,7 +119,11 @@ func Consume() {
 			  //panic("message incorrect")
 			  continue
 		  }
-		  match := matching.SaveMatch( split[0], split[1] )
+		  err, match := matching.SaveMatch( split[0], split[1] )
+		  if err != nil {
+			  fmt.Println(err)
+			  continue
+		  }
 		  if match.Matched == true {
 			  PublishMatch(split[0], split[1])
 			  PublishMatch(split[1], split[0])
