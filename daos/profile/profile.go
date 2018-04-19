@@ -41,7 +41,7 @@ func init() {
 	Kevin = profileTypes.BlazrProfile {
 		UserID: "1", 
 		Name: "Kevin", 
-		Age: 22,
+		Age: 23,
 		Bio: "No butt stuff", 
 		MatchPool: []profileTypes.BlazrProfile{},
 	}

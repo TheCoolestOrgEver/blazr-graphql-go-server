@@ -9,7 +9,6 @@ import (
 
 var (
 	sendCh *amqp.Channel
-	sendQ amqp.Queue
 	receiveCh *amqp.Channel
 	receiveQ amqp.Queue
 )
@@ -30,15 +29,16 @@ func init() {
 	failOnError(err, "Failed to open a channel")
 	//defer sendCh.Close()
 
-	sendQ, err = sendCh.QueueDeclare(
-		"cduica-hello", // name
-		false,   // durable
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
-		nil,     // arguments
+	err = sendCh.ExchangeDeclare(
+		"cduica-hello",   // name
+		"fanout", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
 	)
-	failOnError(err, "Failed to declare a queue")
+	failOnError(err, "Failed to declare an exchange")
 
 	receiveConn, err := amqp.Dial("amqp://cduica:password@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -48,13 +48,24 @@ func init() {
 	failOnError(err, "Failed to open a channel")
 	//defer receiveCh.Close()
 
+	err = receiveCh.ExchangeDeclare(
+		"cduica-world",   // name
+		"fanout", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
+	)
+	failOnError(err, "Failed to declare an exchange")
+
 	receiveQ, err = receiveCh.QueueDeclare(
-	"cduica-world", // name
-	false,   // durable
-	false,   // delete when usused
-	false,   // exclusive
-	false,   // no-wait
-	nil,     // arguments
+		"", // name
+		false,   // durable
+		false,   // delete when usused
+		true,   // exclusive
+		false,   // no-wait
+		nil,     // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 }
@@ -62,8 +73,8 @@ func init() {
 func PublishMatch( userA string, userB string ) {
 	body := userA + " " + userB
 	err := sendCh.Publish(
-		"",     // exchange
-		sendQ.Name, // routing key
+		"cduica-hello",     // exchange
+		"", // routing key
 		false,  // mandatory
 		false,  // immediate
 		amqp.Publishing{
@@ -75,6 +86,16 @@ func PublishMatch( userA string, userB string ) {
 }
 
 func Consume() {
+
+	er := receiveCh.QueueBind(
+		receiveQ.Name, // queue name
+		"",     // routing key
+		"cduica-world", // exchange
+		false,
+		nil,
+	)
+	failOnError(er, "Failed to bind a queue")
+
 	msgs, err := receiveCh.Consume(
 		receiveQ.Name, // queue
 		"",     // consumer
@@ -93,6 +114,10 @@ func Consume() {
 		  log.Printf( "[x] Received a message: %s", d.Body )
 		  s := string( d.Body[:] )
 		  split := strings.Split( s, " " )
+		  if len(split) < 2 {
+			  //panic("message incorrect")
+			  continue
+		  }
 		  match := matching.SaveMatch( split[0], split[1] )
 		  if match.Matched == true {
 			  PublishMatch(split[0], split[1])

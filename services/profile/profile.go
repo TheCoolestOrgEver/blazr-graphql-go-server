@@ -5,7 +5,7 @@ import (
 	"../../models/location"
 	profileDAO "../../daos/profile"
 	"../geolocation"
-	"github.com/rs/xid"
+	//"github.com/rs/xid"
 	"fmt"
 )
 
@@ -14,8 +14,8 @@ func GetProfile( id string ) profileTypes.BlazrProfile {
 }
 
 func CreateProfile( profile *profileTypes.BlazrProfile ) profileTypes.BlazrProfile {
-	userID := xid.New()
-	profile.UserID = userID.String();
+	//userID := xid.New()
+	//profile.UserID = userID.String();
 	return profileDAO.Save(profile)
 }
 
