@@ -7,6 +7,7 @@ import (
 	"../geolocation"
 	//"github.com/rs/xid"
 	"fmt"
+	"math/rand"
 )
 
 func GetProfile( id string ) (error, profileTypes.BlazrProfile) {
@@ -26,7 +27,18 @@ func GetProfiles( coordinates location.Coordinates, radiusMiles float64 ) (error
 	fmt.Print("min coords : %d, %d ", minCoordinates.Lat, minCoordinates.Long)
 	fmt.Print("max coords : %d, %d ", maxCoordinates.Lat, maxCoordinates.Long)
 
-	return profileDAO.FindByCoordinatesBetween( minCoordinates, maxCoordinates )
+	err, profiles := profileDAO.FindByCoordinatesBetween( minCoordinates, maxCoordinates )
+
+	ShuffleProfiles(profiles)
+
+	return err, profiles
+}
+
+func ShuffleProfiles( profiles []profileTypes.BlazrProfile ) {
+	for i := 0; i < len(profiles); i++ {
+		j := rand.Intn(i + 1)
+		profiles[i], profiles[j] = profiles[j], profiles[i]
+	}
 }
 
 func DeleteProfile( id string ) (error, profileTypes.BlazrProfile) {
