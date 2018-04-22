@@ -107,7 +107,7 @@ func GetMatches( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) 
 	id := ps.ByName("userID")
 	fmt.Print(id)
 	fmt.Println("Getting matches")
-	err, matches := matchpoolService.GetMatches( id )
+	err, matches := matchpoolService.GetMatchedProfiles( id )
 	if err!=nil {
 		http.Error(w, err.Error(), 500)
 		return

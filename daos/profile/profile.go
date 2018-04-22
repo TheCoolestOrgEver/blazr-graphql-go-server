@@ -109,3 +109,9 @@ func createRadiusQuery( minCoordinates location.Coordinates, maxCoordinates loca
 
 	return query
 }
+
+func FetchMatches(ids []string) (error, []profileTypes.BlazrProfile) {
+	var result []profileTypes.BlazrProfile
+	err := c.Find(bson.M{"userID": bson.M{"$in": ids}}).All(&result);
+	return err, result
+}
