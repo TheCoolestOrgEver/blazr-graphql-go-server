@@ -32,7 +32,7 @@ func init() {
 
 	err = sendCh.ExchangeDeclare(
 		"cduica-hello",   // name
-		"fanout", // type
+		"direct", // type
 		true,     // durable
 		false,    // auto-deleted
 		false,    // internal
@@ -51,7 +51,7 @@ func init() {
 
 	err = receiveCh.ExchangeDeclare(
 		"cduica-world",   // name
-		"fanout", // type
+		"direct", // type
 		true,     // durable
 		false,    // auto-deleted
 		false,    // internal
@@ -63,8 +63,8 @@ func init() {
 	receiveQ, err = receiveCh.QueueDeclare(
 		"", // name
 		false,   // durable
-		false,   // delete when usused
-		true,   // exclusive
+		true,   // delete when usused
+		false,   // exclusive
 		false,   // no-wait
 		nil,     // arguments
 	)
