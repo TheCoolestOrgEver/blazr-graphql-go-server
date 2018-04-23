@@ -11,6 +11,14 @@ import (
 func GetMatchedProfiles( id string ) (error, []profileType.BlazrProfile) {
 	//return matchpoolDAO.FindOne(id)
 	// do some real shit here
+	
+	ids := GetMatchedIds( id )
+
+	// now do a find all of all these ids
+	return profileDAO.FetchMatches(ids);
+}
+
+func GetMatchedIds( id string ) []string {
 	err, matches := matchpoolDAO.FindOne(id)
 	if err != nil {
 		panic(err)
@@ -23,9 +31,7 @@ func GetMatchedProfiles( id string ) (error, []profileType.BlazrProfile) {
 			ids = append( ids, matches.Matches[i].UserA )
 		}	
 	}
-
-	// now do a find all of all these ids
-	return profileDAO.FetchMatches(ids);
+	return ids
 }
 
 func GetMatches( id string ) (error, matchpoolType.MatchPool) {

@@ -32,6 +32,7 @@ func GetProfile( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) 
 
 func GetProfiles( w http.ResponseWriter, r *http.Request, ps httprouter.Params ) {
 	q := r.URL.Query()
+	userID := q.Get("userID")
 	radius, _ := strconv.ParseFloat(q.Get("radius"), 64)
 	lat, _ := strconv.ParseFloat(q.Get("lat"), 64)
 	long, _ := strconv.ParseFloat(q.Get("long"), 64)
@@ -41,11 +42,19 @@ func GetProfiles( w http.ResponseWriter, r *http.Request, ps httprouter.Params )
 	}
 	fmt.Println("Fetching nearby profiles")
 	err, profiles := profileService.GetProfiles( coordinates, radius )
+	matches := matchpoolService.GetMatchedIds( userID )
+	var filtered []profileTypes.BlazrProfile
+	//would probably use a hashset for this yada yada yada
+	for i := 0; i < len(profiles); i++ {
+		if contains(matches, profiles[i].UserID) == false {
+			filtered = append(filtered, profiles[i])
+		}
+	}
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	p, _ := json.Marshal(profiles)
+	p, _ := json.Marshal(filtered)
 	fmt.Println(string(p))
 	fmt.Print("\n")
 	w.Header().Set("Content-Type", "application/json")
@@ -138,4 +147,13 @@ func UpdateLocation( w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(200)
     fmt.Fprintf(w, "%s", p)
+}
+
+func contains( matches []string, id string ) bool {
+	for _, m := range matches {
+        if m == id {
+            return true
+        }
+    }
+    return false
 }
