@@ -14,7 +14,7 @@ func GetMatchedProfiles( id string ) (error, []profileType.BlazrProfile) {
 	
 	err, ids := GetMatchedIds( id )
 	if err != nil {
-		panic(err)
+		ids = []string{""}
 	}
 
 	// now do a find all of all these ids
