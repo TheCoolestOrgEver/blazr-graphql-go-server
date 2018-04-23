@@ -42,18 +42,23 @@ func GetProfiles( w http.ResponseWriter, r *http.Request, ps httprouter.Params )
 	}
 	fmt.Println("Fetching nearby profiles")
 	err, profiles := profileService.GetProfiles( coordinates, radius )
-	matches := matchpoolService.GetMatchedIds( userID )
-	var filtered []profileTypes.BlazrProfile
-	//would probably use a hashset for this yada yada yada
-	for i := 0; i < len(profiles); i++ {
-		if contains(matches, profiles[i].UserID) == false {
-			filtered = append(filtered, profiles[i])
-		}
-	}
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+	err2, matches := matchpoolService.GetMatchedIds( userID )
+	var filtered []profileTypes.BlazrProfile
+	//would probably use a hashset for this yada yada yada
+	if err2 != nil {
+		filtered = profiles
+	} else {
+		for i := 0; i < len(profiles); i++ {
+			if contains(matches, profiles[i].UserID) == false {
+				filtered = append(filtered, profiles[i])
+			}
+		}
+	}
+
 	p, _ := json.Marshal(filtered)
 	fmt.Println(string(p))
 	fmt.Print("\n")
